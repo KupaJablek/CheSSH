@@ -30,8 +30,11 @@ func help() {
 
 func clear_terminal() {
 	platform := runtime.GOOS
+
+	println(platform)
+
 	if platform == "windows" {
-		cmd := exec.Command("cls")
+		cmd := exec.Command("cmd", "/c", "cls")
 		cmd.Stdout = os.Stdout
 		cmd.Run()
 	} else {
