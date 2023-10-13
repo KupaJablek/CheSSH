@@ -1,4 +1,4 @@
-module github.com/KupaJablek/main
+module github.com/KupaJablek/CheSSH
 
 go 1.18
 

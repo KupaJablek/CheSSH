@@ -1,50 +1,12 @@
-package main
+package game
 
 import (
 	"fmt"
-	"os"
-	"os/exec"
-	"runtime"
 
 	"github.com/fatih/color"
 )
 
-func absolute_val(x int) int {
-	if x < 0 {
-		return -x
-	}
-	return x
-}
-
-func help() {
-	fmt.Println("CheSSH is a tool for playing local or online chess using SSH")
-	fmt.Println("")
-	fmt.Println("Usage:")
-	fmt.Println("\tchessh <command> [arguments]")
-	fmt.Println("")
-	fmt.Println("The Commands are:")
-	fmt.Println("\t--hotseat")
-	fmt.Println("\t--host")
-	fmt.Println("\t--join")
-}
-
-func clear_terminal() {
-	platform := runtime.GOOS
-
-	println(platform)
-
-	if platform == "windows" {
-		cmd := exec.Command("cmd", "/c", "cls")
-		cmd.Stdout = os.Stdout
-		cmd.Run()
-	} else {
-		cmd := exec.Command("clear")
-		cmd.Stdout = os.Stdout
-		cmd.Run()
-	}
-}
-
-func print_board(g Game) {
+func printBoard(g Game) {
 	blue := color.New(color.FgBlue, color.Bold)
 	red := color.New(color.FgRed, color.Bold)
 
@@ -56,12 +18,12 @@ func print_board(g Game) {
 		startCount = 7
 		limit = -1
 		increment = -1
-		fmt.Println("Player 1's Turn")
+		blue.Printf("Player 1's Turn\n")
 	} else {
 		startCount = 0
 		limit = 8
 		increment = 1
-		fmt.Println("Player 2's Turn")
+		red.Printf("Player 2's Turn\n")
 	}
 
 	fmt.Println("\n   A B C D E F G H ")
