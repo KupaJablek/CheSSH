@@ -1,6 +1,7 @@
-package main
+package game
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
 )
@@ -96,8 +97,51 @@ func (g *Game) move_piece(move string) (bool, string) {
 	return true, ""
 }
 
-func (g *Game) promote_pawn(pawn [2]int) {
+func (g *Game) PromotePawn(pawn [2]int) bool {
+	if g.current_player == Player1 && pawn[0] != 7 {
+		return false
+	}
+	if g.current_player == Player2 && pawn[0] != 0 {
+		return false
+	}
 
+	fmt.Printf("Promote your pawn!\n")
+	fmt.Printf("\tQueen: 'q'")
+	fmt.Printf("\tBishop: 'b'")
+	fmt.Printf("\tRook: 'r'")
+	fmt.Printf("\tKnight: 'k'")
+	fmt.Printf("Enter your choice:")
+
+	validInput := false
+	var promotedPiece Piece
+
+	for !validInput {
+		var userInput string
+		fmt.Scanln(&userInput)
+
+		switch userInput {
+		case "q", "Q":
+			promotedPiece = Piece{g.current_player, Queen, "Q"}
+			validInput = true
+			break
+		case "b", "B":
+			promotedPiece = Piece{g.current_player, Bishop, "B"}
+			validInput = true
+			break
+		case "r", "R":
+			promotedPiece = Piece{g.current_player, Rook, "R"}
+			validInput = true
+			break
+		case "k", "K":
+			promotedPiece = Piece{g.current_player, Knight, "H"}
+			validInput = true
+			break
+		default:
+			fmt.Printf("'%s' is not a valid choice, re-enter: ", userInput)
+		}
+	}
+	g.board[pawn[0]][pawn[1]] = promotedPiece
+	return true
 }
 
 func (g *Game) end_turn() {

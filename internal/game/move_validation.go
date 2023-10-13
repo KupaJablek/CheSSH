@@ -1,8 +1,10 @@
-package main
+package game
+
+import "github.com/KupaJablek/CheSSH/internal/util"
 
 func (g *Game) validate_pawn(start [2]int, end [2]int) bool {
 	y_diff := end[0] - start[0]
-	pos_diff_x := absolute_val(end[1] - start[1])
+	pos_diff_x := util.AbsoluteVal(end[1] - start[1])
 	target := g.board[end[0]][end[1]]
 
 	if g.current_player == Player1 {
@@ -97,7 +99,7 @@ func (g *Game) validate_diagonal(start [2]int, end [2]int) bool {
 	x_diff := end[1] - start[1]
 	y_diff := end[0] - start[0]
 
-	if absolute_val(y_diff) != absolute_val(x_diff) {
+	if util.AbsoluteVal(y_diff) != util.AbsoluteVal(x_diff) {
 		return false
 	}
 
@@ -138,8 +140,8 @@ func (g *Game) validate_multi_direction(start [2]int, end [2]int) bool {
 }
 
 func (g *Game) validate_knight(start [2]int, end [2]int) bool {
-	ydiff := absolute_val(end[0] - start[0])
-	xdiff := absolute_val(end[1] - start[1])
+	ydiff := util.AbsoluteVal(end[0] - start[0])
+	xdiff := util.AbsoluteVal(end[1] - start[1])
 	if ydiff == 2 && xdiff == 1 {
 		return true
 	} else if ydiff == 1 && xdiff == 2 {
@@ -149,7 +151,7 @@ func (g *Game) validate_knight(start [2]int, end [2]int) bool {
 }
 
 func (g *Game) validate_king(start [2]int, end [2]int) bool {
-	if absolute_val(end[0]-start[0]) <= 1 && absolute_val(end[1]-start[1]) <= 1 {
+	if util.AbsoluteVal(end[0]-start[0]) <= 1 && util.AbsoluteVal(end[1]-start[1]) <= 1 {
 		return g.validate_multi_direction(start, end)
 	}
 	return false

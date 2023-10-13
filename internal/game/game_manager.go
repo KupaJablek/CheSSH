@@ -1,15 +1,19 @@
-package main
+package game
 
-import "fmt"
+import (
+	"fmt"
 
-func create_hotseat_game() {
+	"github.com/KupaJablek/CheSSH/internal/util"
+)
+
+func Create_Hotseat_Game() {
 	var g Game
 	g.initialize_board()
 	g.current_player = Player1
 
-	clear_terminal()
+	util.ClearTerminal()
 
-	print_board(g)
+	printBoard(g)
 	for !g.game_over {
 		fmt.Println("enter chess coordinate ie: 'a1-a2' or n to end game")
 		var user_input string
@@ -28,8 +32,8 @@ func create_hotseat_game() {
 
 		if move_ok {
 			g.end_turn()
-			clear_terminal()
-			print_board(g)
+			util.ClearTerminal()
+			printBoard(g)
 		}
 	}
 	fmt.Println("GAMEOVER")
@@ -40,10 +44,10 @@ func create_hotseat_game() {
 	}
 }
 
-func host_ssh_lobby() {
+func Host_ssh_lobby() {
 	fmt.Println("NOT IMPLEMENTED YET")
 }
 
-func join_ssh_lobby() {
+func Join_ssh_lobby() {
 	fmt.Println("NOT IMPLEMENTED YET")
 }
