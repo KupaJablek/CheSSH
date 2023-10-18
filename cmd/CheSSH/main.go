@@ -10,19 +10,19 @@ import (
 func main() {
 	args := os.Args
 	if len(args) < 2 {
-		game.Create_Hotseat_Game()
+		game.CreateHotseatGame()
 		return
 	}
 
 	switch args[1] {
 	case "--hotseat":
-		game.Create_Hotseat_Game()
+		game.CreateHotseatGame()
 		break
 	case "--host":
-		game.Host_ssh_lobby()
+		game.HostSshLobby()
 		break
 	case "--join":
-		game.Join_ssh_lobby()
+		game.JoinSshLobby()
 		break
 	case "--help":
 	default:

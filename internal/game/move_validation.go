@@ -2,7 +2,7 @@ package game
 
 import "github.com/KupaJablek/CheSSH/internal/util"
 
-func (g *Game) validate_pawn(start [2]int, end [2]int) bool {
+func validate_pawn(g *Game, start [2]int, end [2]int) bool {
 	y_diff := end[0] - start[0]
 	pos_diff_x := util.AbsoluteVal(end[1] - start[1])
 	target := g.board[end[0]][end[1]]
@@ -47,7 +47,7 @@ func (g *Game) validate_pawn(start [2]int, end [2]int) bool {
 	return true
 }
 
-func (g *Game) validate_orthogonal(start [2]int, end [2]int) bool {
+func validate_orthogonal(g *Game, start [2]int, end [2]int) bool {
 
 	y_diff := end[0] - start[0]
 	x_diff := end[1] - start[1]
@@ -90,7 +90,7 @@ func (g *Game) validate_orthogonal(start [2]int, end [2]int) bool {
 	return true
 }
 
-func (g *Game) validate_diagonal(start [2]int, end [2]int) bool {
+func validate_diagonal(g *Game, start [2]int, end [2]int) bool {
 
 	if start[0] == end[0] || start[1] == end[1] {
 		return false
@@ -132,14 +132,14 @@ func (g *Game) validate_diagonal(start [2]int, end [2]int) bool {
 	return true
 }
 
-func (g *Game) validate_multi_direction(start [2]int, end [2]int) bool {
-	if !g.validate_diagonal(start, end) && !g.validate_orthogonal(start, end) {
+func validate_multi_direction(g *Game, start [2]int, end [2]int) bool {
+	if !validate_diagonal(g, start, end) && !validate_orthogonal(g, start, end) {
 		return false
 	}
 	return true
 }
 
-func (g *Game) validate_knight(start [2]int, end [2]int) bool {
+func validate_knight(g *Game, start [2]int, end [2]int) bool {
 	ydiff := util.AbsoluteVal(end[0] - start[0])
 	xdiff := util.AbsoluteVal(end[1] - start[1])
 	if ydiff == 2 && xdiff == 1 {
@@ -150,9 +150,9 @@ func (g *Game) validate_knight(start [2]int, end [2]int) bool {
 	return false
 }
 
-func (g *Game) validate_king(start [2]int, end [2]int) bool {
+func validate_king(g *Game, start [2]int, end [2]int) bool {
 	if util.AbsoluteVal(end[0]-start[0]) <= 1 && util.AbsoluteVal(end[1]-start[1]) <= 1 {
-		return g.validate_multi_direction(start, end)
+		return validate_multi_direction(g, start, end)
 	}
 	return false
 }

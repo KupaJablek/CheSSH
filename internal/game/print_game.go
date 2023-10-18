@@ -6,7 +6,7 @@ import (
 	"github.com/fatih/color"
 )
 
-func printBoard(g Game) {
+func PrintBoard(g *Game) {
 	blue := color.New(color.FgBlue, color.Bold)
 	red := color.New(color.FgRed, color.Bold)
 
