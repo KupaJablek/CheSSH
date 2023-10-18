@@ -2,6 +2,7 @@ package game
 
 import (
 	"fmt"
+	"regexp"
 	"strconv"
 	"strings"
 )
@@ -13,23 +14,20 @@ type Game struct {
 	winner         Player
 }
 
-func (g *Game) move_piece(move string) (bool, string) {
-	// not enough data in move
-	if len(move) < 5 {
-		return false, "Invalid format"
+func MovePiece(g *Game, move string) (bool, string) {
+	r, _ := regexp.Compile("[abcdefghABCDEFGH][12345678]-[abcdefghABCDEFGH][12345678]")
+
+	if !r.MatchString(move) {
+		return false, "Invalid move format: please use \"a#-a#\""
 	}
 
 	move_positions := strings.Split(move, "-")
-	// not enough input || incorrect separator
-	if len(move_positions) != 2 {
-		return false, "Not enough data"
-	}
 
-	start_pos := decode_move(move_positions[0])
+	start_pos := DecodeMove(move_positions[0])
 	if start_pos[0] == -1 || start_pos[1] == -1 {
 		return false, "Invalid start position"
 	}
-	end_pos := decode_move(move_positions[1])
+	end_pos := DecodeMove(move_positions[1])
 	if end_pos[0] == -1 || end_pos[1] == -1 {
 		return false, "Invalid end position"
 	}
@@ -47,32 +45,32 @@ func (g *Game) move_piece(move string) (bool, string) {
 
 	switch start_piece.piece_name {
 	case Pawn:
-		if !g.validate_pawn(start_pos, end_pos) {
+		if !validate_pawn(g, start_pos, end_pos) {
 			return false, "pawn cannot move like that"
 		}
 		break
 	case King:
-		if !g.validate_king(start_pos, end_pos) {
+		if !validate_king(g, start_pos, end_pos) {
 			return false, "king cannot move like that"
 		}
 		break
 	case Knight:
-		if !g.validate_knight(start_pos, end_pos) {
+		if !validate_knight(g, start_pos, end_pos) {
 			return false, "knight cannot move like that"
 		}
 		break
 	case Rook:
-		if !g.validate_orthogonal(start_pos, end_pos) {
+		if !validate_orthogonal(g, start_pos, end_pos) {
 			return false, "rook cannot move like that"
 		}
 		break
 	case Bishop:
-		if !g.validate_diagonal(start_pos, end_pos) {
+		if !validate_diagonal(g, start_pos, end_pos) {
 			return false, "bishop cannot move like that"
 		}
 		break
 	case Queen:
-		if !g.validate_multi_direction(start_pos, end_pos) {
+		if !validate_multi_direction(g, start_pos, end_pos) {
 			return false, "queen cannot move like that"
 		}
 		break
@@ -92,12 +90,14 @@ func (g *Game) move_piece(move string) (bool, string) {
 	g.board[end_pos[0]][end_pos[1]] = start_piece
 	g.board[start_pos[0]][start_pos[1]] = Piece{Empty, Blank, " "}
 
-	// check if pawn reached the other side of board... they get promoted to any piece except for pawn or king
+	if start_piece.piece_name == Pawn {
+		PromotePawn(g, end_pos)
+	}
 
 	return true, ""
 }
 
-func (g *Game) PromotePawn(pawn [2]int) bool {
+func PromotePawn(g *Game, pawn [2]int) bool {
 	if g.current_player == Player1 && pawn[0] != 7 {
 		return false
 	}
@@ -144,7 +144,7 @@ func (g *Game) PromotePawn(pawn [2]int) bool {
 	return true
 }
 
-func (g *Game) end_turn() {
+func EndTurn(g *Game) {
 	if g.current_player == Player1 {
 		g.current_player = Player2
 	} else {
@@ -152,7 +152,7 @@ func (g *Game) end_turn() {
 	}
 }
 
-func decode_move(move string) [2]int {
+func DecodeMove(move string) [2]int {
 	coordinates := [2]int{-1, -1}
 	row_pos, err := strconv.Atoi(string(move[1]))
 	if err != nil || row_pos < 1 || row_pos > 8 {
@@ -193,7 +193,7 @@ func decode_move(move string) [2]int {
 	return coordinates
 }
 
-func (g *Game) initialize_board() {
+func InitializeBoard(g *Game) {
 	g.board = [8][8]Piece{
 		{
 			{Player1, Rook, "R"}, {Player1, Knight, "H"}, {Player1, Bishop, "B"}, {Player1, King, "K"}, {Player1, Queen, "Q"}, {Player1, Bishop, "B"}, {Player1, Knight, "H"}, {Player1, Rook, "R"},

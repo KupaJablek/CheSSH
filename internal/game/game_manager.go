@@ -6,24 +6,30 @@ import (
 	"github.com/KupaJablek/CheSSH/internal/util"
 )
 
-func Create_Hotseat_Game() {
+func CreateHotseatGame() {
 	var g Game
-	g.initialize_board()
+	InitializeBoard(&g)
 	g.current_player = Player1
 
 	util.ClearTerminal()
 
-	printBoard(g)
+	PrintBoard(&g)
 	for !g.game_over {
-		fmt.Println("enter chess coordinate ie: 'a1-a2' or n to end game")
+		fmt.Println("enter chess coordinate ie: 'a1-a2' or n to surrender")
 		var user_input string
 		fmt.Scanln(&user_input)
 
 		if user_input == "n" {
-			return
+			if g.current_player == Player1 {
+				g.winner = Player2
+			} else {
+				g.winner = Player1
+			}
+			g.game_over = true
+			break
 		}
 
-		move_ok, err := g.move_piece(user_input)
+		move_ok, err := MovePiece(&g, user_input)
 		if move_ok {
 			fmt.Println("ok")
 		} else {
@@ -31,11 +37,13 @@ func Create_Hotseat_Game() {
 		}
 
 		if move_ok {
-			g.end_turn()
+			EndTurn(&g)
 			util.ClearTerminal()
-			printBoard(g)
+			PrintBoard(&g)
 		}
 	}
+
+	util.ClearTerminal()
 	fmt.Println("GAMEOVER")
 	if g.winner == Player1 {
 		fmt.Println("Player 1 is the Winner")
@@ -44,10 +52,10 @@ func Create_Hotseat_Game() {
 	}
 }
 
-func Host_ssh_lobby() {
+func HostSshLobby() {
 	fmt.Println("NOT IMPLEMENTED YET")
 }
 
-func Join_ssh_lobby() {
+func JoinSshLobby() {
 	fmt.Println("NOT IMPLEMENTED YET")
 }
