@@ -36,10 +36,27 @@ func CreateHotseatGame() {
 			fmt.Printf("Error: %s\n", err)
 		}
 
+<<<<<<< Updated upstream
 		if move_ok {
 			EndTurn(&g)
 			util.ClearTerminal()
 			PrintBoard(&g)
+=======
+		if regex.MatchString(user_input) {
+			move_ok, err := MovePiece(&g, user_input)
+			if move_ok {
+				fmt.Println("ok")
+			} else {
+				fmt.Printf("Error: %s\n", err)
+			}
+			fmt.Print("inside: ")
+
+			if move_ok {
+				EndTurn(&g)
+				util.ClearTerminal()
+				PrintBoard(&g)
+			}
+>>>>>>> Stashed changes
 		}
 	}
 
