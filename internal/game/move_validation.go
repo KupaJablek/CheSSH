@@ -15,7 +15,6 @@ func validate_pawn(g *Game, start [2]int, end [2]int) bool {
 			if start[0] != 1 { // index of second row from player1
 				return false
 			}
-			break
 		default:
 			return false
 		}
@@ -28,7 +27,6 @@ func validate_pawn(g *Game, start [2]int, end [2]int) bool {
 			if start[0] != 6 {
 				return false
 			}
-			break
 		default:
 			return false
 		}

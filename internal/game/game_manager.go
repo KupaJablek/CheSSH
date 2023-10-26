@@ -3,6 +3,7 @@ package game
 import (
 	"fmt"
 
+	"github.com/KupaJablek/CheSSH/internal/online"
 	"github.com/KupaJablek/CheSSH/internal/util"
 )
 
@@ -15,34 +16,119 @@ func CreateHotseatGame() {
 
 	PrintBoard(&g)
 	for !g.game_over {
-		fmt.Println("enter chess coordinate ie: 'a1-a2' or n to surrender")
-		var user_input string
-		fmt.Scanln(&user_input)
+		move := GetPlayerMove(&g)
 
-		if user_input == "n" {
-			if g.current_player == Player1 {
-				g.winner = Player2
-			} else {
-				g.winner = Player1
-			}
-			g.game_over = true
+		EndTurn(&g)
+		util.ClearTerminal()
+		if g.current_player == Player1 {
+			fmt.Println("Player 2 moved: ", move)
+		} else {
+			fmt.Println("Player 1 moved: ", move)
+		}
+		fmt.Println("")
+		PrintBoard(&g)
+	}
+	ShowGameOverScreen(&g)
+}
+
+func HostLobby(HOST string, PORT string) {
+	fmt.Print("NOT FULLY IMPLEMENTED YET\n\n")
+	conn, err := online.HostTCP(HOST, PORT, "tcp")
+	//conn, err := online.CreateSSHServer(HOST, PORT, "tcp")
+	if err != nil {
+		fmt.Println("Error hosting server: ", err.Error())
+		return
+	}
+
+	var g Game
+	InitializeBoard(&g)
+	g.current_player = Player1
+
+	for {
+		// server player's turn
+		fmt.Printf("It's your turn!\n")
+
+		// send data to client
+		move := GetPlayerMove(&g)
+		fmt.Fprint(conn, move)
+		if g.game_over {
+			conn.Close()
 			break
 		}
 
-		move_ok, err := MovePiece(&g, user_input)
-		if move_ok {
-			fmt.Println("ok")
-		} else {
-			fmt.Printf("Error: %s\n", err)
+		// client players turn
+		util.ClearTerminal()
+		fmt.Printf("It is Player 2's turn")
+
+		// recieve data from client
+		buffer := make([]byte, 1024)
+		_, err := conn.Read(buffer)
+		if err != nil {
+			fmt.Println("Error reading data from server: ", err.Error())
 		}
 
-		if move_ok {
-			EndTurn(&g)
-			util.ClearTerminal()
-			PrintBoard(&g)
+		// sync client side move with local game
+		MovePiece(&g, string(buffer))
+		EndTurn(&g)
+		if g.game_over {
+			conn.Close()
+			break
+		}
+	}
+	ShowGameOverScreen(&g)
+}
+
+func JoinLobby(HOST string, PORT string) {
+	fmt.Print("NOT FULLY IMPLEMENTED YET\n\n")
+	conn, err := online.JoinTCP(HOST, PORT, "tcp")
+	//conn, err := online.JoinSSHLobby(HOST, PORT, "tcp")
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+
+	var g Game
+	InitializeBoard(&g)
+	g.current_player = Player1
+
+	// while connection is open
+	for {
+		// server player's turn
+		util.ClearTerminal()
+		fmt.Printf("It is Player 1's turn\n")
+
+		// recieve data from server
+		buffer := make([]byte, 1024)
+		_, err := conn.Read(buffer)
+		if err != nil {
+			fmt.Println("Error reading data from server: ", err.Error())
+		}
+
+		// sync server side move with local game
+		MovePiece(&g, string(buffer))
+		EndTurn(&g)
+
+		if g.game_over {
+			conn.Close()
+			break
+		}
+
+		util.ClearTerminal()
+		fmt.Printf("It's your turn!\n")
+
+		// send data to server
+		move := GetPlayerMove(&g)
+		fmt.Fprint(conn, move)
+		if g.game_over {
+			conn.Close()
+			break
 		}
 	}
 
+	ShowGameOverScreen(&g)
+}
+
+func ShowGameOverScreen(g *Game) {
 	util.ClearTerminal()
 	fmt.Println("GAMEOVER")
 	if g.winner == Player1 {
@@ -52,10 +138,31 @@ func CreateHotseatGame() {
 	}
 }
 
-func HostSshLobby() {
-	fmt.Println("NOT IMPLEMENTED YET")
-}
+func GetPlayerMove(g *Game) string {
+	var userInput string
+	PrintBoard(g)
+	validMove := false
 
-func JoinSshLobby() {
-	fmt.Println("NOT IMPLEMENTED YET")
+	for !validMove {
+		fmt.Println("enter chess coordinate ie: 'a1-a2' or n to surrender")
+		fmt.Scanln(&userInput)
+
+		if userInput == "n" {
+			if g.current_player == Player1 {
+				g.winner = Player2
+			} else {
+				g.winner = Player1
+			}
+			g.game_over = true
+			break
+		}
+
+		err := ""
+		validMove, err = MovePiece(g, userInput)
+		if err != "" {
+			fmt.Printf("Error: %s\n", err)
+		}
+	}
+
+	return userInput
 }

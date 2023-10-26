@@ -48,32 +48,26 @@ func MovePiece(g *Game, move string) (bool, string) {
 		if !validate_pawn(g, start_pos, end_pos) {
 			return false, "pawn cannot move like that"
 		}
-		break
 	case King:
 		if !validate_king(g, start_pos, end_pos) {
 			return false, "king cannot move like that"
 		}
-		break
 	case Knight:
 		if !validate_knight(g, start_pos, end_pos) {
 			return false, "knight cannot move like that"
 		}
-		break
 	case Rook:
 		if !validate_orthogonal(g, start_pos, end_pos) {
 			return false, "rook cannot move like that"
 		}
-		break
 	case Bishop:
 		if !validate_diagonal(g, start_pos, end_pos) {
 			return false, "bishop cannot move like that"
 		}
-		break
 	case Queen:
 		if !validate_multi_direction(g, start_pos, end_pos) {
 			return false, "queen cannot move like that"
 		}
-		break
 	default:
 		return false, "Cannot move an empty space"
 	}
@@ -123,19 +117,15 @@ func PromotePawn(g *Game, pawn [2]int) bool {
 		case "q", "Q":
 			promotedPiece = Piece{g.current_player, Queen, "Q"}
 			validInput = true
-			break
 		case "b", "B":
 			promotedPiece = Piece{g.current_player, Bishop, "B"}
 			validInput = true
-			break
 		case "r", "R":
 			promotedPiece = Piece{g.current_player, Rook, "R"}
 			validInput = true
-			break
 		case "k", "K":
 			promotedPiece = Piece{g.current_player, Knight, "H"}
 			validInput = true
-			break
 		default:
 			fmt.Printf("'%s' is not a valid choice, re-enter: ", userInput)
 		}
@@ -164,30 +154,21 @@ func DecodeMove(move string) [2]int {
 	switch string(move[0]) {
 	case "a", "A":
 		coordinates[1] = 0
-		break
 	case "b", "B":
 		coordinates[1] = 1
-		break
 	case "c", "C":
 		coordinates[1] = 2
-		break
 	case "d", "D":
 		coordinates[1] = 3
-		break
 	case "e", "E":
 		coordinates[1] = 4
-		break
 	case "f", "F":
 		coordinates[1] = 5
-		break
 	case "g", "G":
 		coordinates[1] = 6
-		break
 	case "h", "H":
 		coordinates[1] = 7
-		break
 	default:
-		break
 	}
 
 	return coordinates

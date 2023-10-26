@@ -36,14 +36,11 @@ func PrintBoard(g *Game) {
 			case Player1:
 				blue.Printf("%s", g.board[k][i].icon)
 				fmt.Printf("|")
-				break
 			case Player2:
 				red.Printf("%s", g.board[k][i].icon)
 				fmt.Printf("|")
-				break
 			default:
 				fmt.Printf("%s|", g.board[k][i].icon)
-				break
 			}
 		}
 		fmt.Printf(" %d\n", k+1)
