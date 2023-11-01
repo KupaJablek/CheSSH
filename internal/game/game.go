@@ -15,7 +15,9 @@ type Game struct {
 }
 
 func MovePiece(g *Game, move string) (bool, string) {
-	r, _ := regexp.Compile("[abcdefghABCDEFGH][12345678]-[abcdefghABCDEFGH][12345678]")
+	r, _ := regexp.Compile(`^[a-hA-H][1-8]-[a-hA-H][1-8]$`)
+
+	//move = InputStringParser(move)
 
 	if !r.MatchString(move) {
 		return false, "Invalid move format: please use \"a#-a#\""
