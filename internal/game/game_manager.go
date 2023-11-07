@@ -7,7 +7,7 @@ import (
 	"github.com/KupaJablek/CheSSH/internal/util"
 )
 
-func CreateHotseatGame() {
+func CreateHotseatGame(p1name, p2name string) {
 	var g Game
 	InitializeBoard(&g)
 	g.current_player = Player1
@@ -21,9 +21,9 @@ func CreateHotseatGame() {
 		EndTurn(&g)
 		util.ClearTerminal()
 		if g.current_player == Player1 {
-			fmt.Println("Player 2 moved: ", move)
+			fmt.Printf("%s moved: %v", p1name, move)
 		} else {
-			fmt.Println("Player 1 moved: ", move)
+			fmt.Printf("%s moved: %v", p2name, move)
 		}
 		fmt.Println("")
 		PrintBoard(&g)
@@ -31,7 +31,7 @@ func CreateHotseatGame() {
 	ShowGameOverScreen(&g)
 }
 
-func HostLobby(HOST string, PORT string) {
+func HostLobby(HOST, PORT, USER, PASSWORD string) {
 	fmt.Print("NOT FULLY IMPLEMENTED YET\n\n")
 	conn, err := online.HostTCP(HOST, PORT, "tcp")
 	//conn, err := online.CreateSSHServer(HOST, PORT, "tcp")
@@ -78,7 +78,7 @@ func HostLobby(HOST string, PORT string) {
 	ShowGameOverScreen(&g)
 }
 
-func JoinLobby(HOST string, PORT string) {
+func JoinLobby(HOST, PORT, USER string) {
 	fmt.Print("NOT FULLY IMPLEMENTED YET\n\n")
 	conn, err := online.JoinTCP(HOST, PORT, "tcp")
 	//conn, err := online.JoinSSHLobby(HOST, PORT, "tcp")

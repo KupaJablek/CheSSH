@@ -7,11 +7,9 @@ clean: ##- run go clean and remove all binaries from /bin
 	go clean
 	rm ./bin/*
 
-run: ##- run CheSSH without any parameters 
-	go run ./cmd/CheSSH/
-
-hotseat: ##- run a HOTSEAT game of chess with no parameters
-	go run ./cmd/CheSSH/ --hotseat
+test:
+	go test -v internal/online/server_utils.go internal/online/online_test.go
+	go test -v cmd/CheSSH/main.go cmd/CheSSH/main_test.go
 
 compile: ##- build a binary for all supported x64 OS
 	echo "Compiling ${BINARY_NAME} for all supported OS"
