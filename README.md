@@ -52,7 +52,7 @@ a1-b3 or C3-C1 or d4-g7
 
 ## Customization
 
-Customization will be coming in a future update.
+Options for customization can be found [here](/docs/config.md)
 
 ## Binaries
 

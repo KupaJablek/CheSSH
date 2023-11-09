@@ -24,11 +24,6 @@ func main() {
 		return
 	}
 
-	if len(args) == 2 {
-		game.CreateHotseatGame(P1, P2)
-		return
-	}
-
 	if len(args) > 2 && !InputStringParser(args) {
 		util.Help()
 		return
