@@ -4,7 +4,7 @@ go 1.18
 
 require github.com/fatih/color v1.15.0
 
-require github.com/BurntSushi/toml v1.3.2 // indirect
+require github.com/BurntSushi/toml v1.3.2
 
 require (
 	github.com/mattn/go-colorable v0.1.13 // indirect

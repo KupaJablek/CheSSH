@@ -24,19 +24,20 @@ Start out with our default config:
 # colours #
 ###########
 
-#FgRed
-#FgGreen
-#FgYellow
-#FgBlue
-#FgMagenta
-#FgCyan
-#FgWhite
+#Black = 30
+#Red = 31
+#Green = 32
+#Yellow = 33
+#Blue = 34
+#Magenta = 35 
+#Cyan = 36
+#White = 37
 
-p1Colour = "FgBlue"
-p2Colour = "FgRed"
+p1Colour = 34
+p2Colour = 31
 
 # colour for non piece board elements
-boardColour = "white"
+boardColour = 37 
 
 #########
 # icons #

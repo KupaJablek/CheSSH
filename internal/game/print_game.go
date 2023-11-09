@@ -3,12 +3,15 @@ package game
 import (
 	"fmt"
 
+	"github.com/KupaJablek/CheSSH/internal/util"
 	"github.com/fatih/color"
 )
 
-func PrintBoard(g *Game) {
-	blue := color.New(color.FgBlue, color.Bold)
-	red := color.New(color.FgRed, color.Bold)
+func PrintBoard(g *Game, c *util.Config) {
+	p1 := color.New(color.Attribute(g.conf.P1Colour), color.Bold)
+	p2 := color.New(color.Attribute(g.conf.P2Colour), color.Bold)
+
+	bc := color.New(color.Attribute(g.conf.BoardColour), color.Bold)
 
 	var startCount int
 	var limit int
@@ -18,34 +21,34 @@ func PrintBoard(g *Game) {
 		startCount = 7
 		limit = -1
 		increment = -1
-		blue.Printf("Player 1's Turn\n")
+		p1.Printf("Player 1's Turn\n")
 	} else {
 		startCount = 0
 		limit = 8
 		increment = 1
-		red.Printf("Player 2's Turn\n")
+		p2.Printf("Player 2's Turn\n")
 	}
 
-	fmt.Println("\n   A B C D E F G H ")
-	fmt.Println("  +-+-+-+-+-+-+-+-+")
+	bc.Println("\n   A B C D E F G H ")
+	bc.Println("  +-+-+-+-+-+-+-+-+")
 	for k := startCount; k != limit; k += increment {
 
-		fmt.Printf("%d |", k+1)
+		bc.Printf("%d |", k+1)
 		for i := 0; i < 8; i++ {
 			switch g.board[k][i].player {
 			case Player1:
-				blue.Printf("%s", g.board[k][i].icon)
-				fmt.Printf("|")
+				p1.Printf("%s", g.board[k][i].icon)
+				bc.Printf("|")
 			case Player2:
-				red.Printf("%s", g.board[k][i].icon)
-				fmt.Printf("|")
+				p2.Printf("%s", g.board[k][i].icon)
+				bc.Printf("|")
 			default:
-				fmt.Printf("%s|", g.board[k][i].icon)
+				bc.Printf("%s|", g.board[k][i].icon)
 			}
 		}
-		fmt.Printf(" %d\n", k+1)
-		fmt.Println("  +-+-+-+-+-+-+-+-+")
+		bc.Printf(" %d\n", k+1)
+		bc.Println("  +-+-+-+-+-+-+-+-+")
 	}
-	fmt.Println("   A B C D E F G H ")
+	bc.Println("   A B C D E F G H ")
 	fmt.Println()
 }

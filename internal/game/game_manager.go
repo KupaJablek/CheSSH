@@ -9,12 +9,16 @@ import (
 
 func CreateHotseatGame(p1name, p2name string) {
 	var g Game
+	conf, _ := util.LoadConfig()
+	util.InitDefault(&conf)
+	g.conf = conf
+
 	InitializeBoard(&g)
 	g.current_player = Player1
 
 	util.ClearTerminal()
+	PrintBoard(&g, &conf)
 
-	PrintBoard(&g)
 	for !g.game_over {
 		move := GetPlayerMove(&g)
 
@@ -26,7 +30,7 @@ func CreateHotseatGame(p1name, p2name string) {
 			fmt.Printf("%s moved: %v", p2name, move)
 		}
 		fmt.Println("")
-		PrintBoard(&g)
+		PrintBoard(&g, &conf)
 	}
 	ShowGameOverScreen(&g)
 }
@@ -40,7 +44,11 @@ func HostLobby(HOST, PORT, USER, PASSWORD string) {
 		return
 	}
 
+	conf, _ := util.LoadConfig()
+	util.InitDefault(&conf)
+
 	var g Game
+	g.conf = conf
 	InitializeBoard(&g)
 	g.current_player = Player1
 
@@ -49,6 +57,7 @@ func HostLobby(HOST, PORT, USER, PASSWORD string) {
 		fmt.Printf("It's your turn!\n")
 
 		// send data to client
+		PrintBoard(&g, &conf)
 		move := GetPlayerMove(&g)
 		fmt.Fprint(conn, move)
 		if g.game_over {
@@ -87,7 +96,11 @@ func JoinLobby(HOST, PORT, USER string) {
 		return
 	}
 
+	conf, _ := util.LoadConfig()
+	util.InitDefault(&conf)
+
 	var g Game
+	g.conf = conf
 	InitializeBoard(&g)
 	g.current_player = Player1
 
@@ -117,6 +130,7 @@ func JoinLobby(HOST, PORT, USER string) {
 		fmt.Printf("It's your turn!\n")
 
 		// send data to server
+		PrintBoard(&g, &conf)
 		move := GetPlayerMove(&g)
 		fmt.Fprint(conn, move)
 		if g.game_over {
@@ -140,7 +154,6 @@ func ShowGameOverScreen(g *Game) {
 
 func GetPlayerMove(g *Game) string {
 	var userInput string
-	PrintBoard(g)
 	validMove := false
 
 	for !validMove {

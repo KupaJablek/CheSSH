@@ -5,6 +5,8 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+
+	"github.com/KupaJablek/CheSSH/internal/util"
 )
 
 type Game struct {
@@ -12,6 +14,8 @@ type Game struct {
 	game_over      bool
 	current_player Player
 	winner         Player
+
+	conf util.Config
 }
 
 func MovePiece(g *Game, move string) (bool, string) {
@@ -117,16 +121,16 @@ func PromotePawn(g *Game, pawn [2]int) bool {
 
 		switch userInput {
 		case "q", "Q":
-			promotedPiece = Piece{g.current_player, Queen, "Q"}
+			promotedPiece = Piece{g.current_player, Queen, g.conf.Queen}
 			validInput = true
 		case "b", "B":
-			promotedPiece = Piece{g.current_player, Bishop, "B"}
+			promotedPiece = Piece{g.current_player, Bishop, g.conf.Bishop}
 			validInput = true
 		case "r", "R":
-			promotedPiece = Piece{g.current_player, Rook, "R"}
+			promotedPiece = Piece{g.current_player, Rook, g.conf.Rook}
 			validInput = true
 		case "k", "K":
-			promotedPiece = Piece{g.current_player, Knight, "H"}
+			promotedPiece = Piece{g.current_player, Knight, g.conf.Knight}
 			validInput = true
 		default:
 			fmt.Printf("'%s' is not a valid choice, re-enter: ", userInput)
@@ -179,28 +183,36 @@ func DecodeMove(move string) [2]int {
 func InitializeBoard(g *Game) {
 	g.board = [8][8]Piece{
 		{
-			{Player1, Rook, "R"}, {Player1, Knight, "H"}, {Player1, Bishop, "B"}, {Player1, King, "K"}, {Player1, Queen, "Q"}, {Player1, Bishop, "B"}, {Player1, Knight, "H"}, {Player1, Rook, "R"},
+			{Player1, Rook, g.conf.Rook}, {Player1, Knight, g.conf.Knight}, {Player1, Bishop, g.conf.Bishop}, {Player1, King, g.conf.King},
+			{Player1, Queen, g.conf.Queen}, {Player1, Bishop, g.conf.Bishop}, {Player1, Knight, g.conf.Knight}, {Player1, Rook, g.conf.Rook},
 		},
 		{
-			{Player1, Pawn, "p"}, {Player1, Pawn, "p"}, {Player1, Pawn, "p"}, {Player1, Pawn, "p"}, {Player1, Pawn, "p"}, {Player1, Pawn, "p"}, {Player1, Pawn, "p"}, {Player1, Pawn, "p"},
+			{Player1, Pawn, g.conf.Pawn}, {Player1, Pawn, g.conf.Pawn}, {Player1, Pawn, g.conf.Pawn}, {Player1, Pawn, g.conf.Pawn},
+			{Player1, Pawn, g.conf.Pawn}, {Player1, Pawn, g.conf.Pawn}, {Player1, Pawn, g.conf.Pawn}, {Player1, Pawn, g.conf.Pawn},
 		},
 		{
-			{Empty, Blank, " "}, {Empty, Blank, " "}, {Empty, Blank, " "}, {Empty, Blank, " "}, {Empty, Blank, " "}, {Empty, Blank, " "}, {Empty, Blank, " "}, {Empty, Blank, " "},
+			{Empty, Blank, " "}, {Empty, Blank, " "}, {Empty, Blank, " "}, {Empty, Blank, " "},
+			{Empty, Blank, " "}, {Empty, Blank, " "}, {Empty, Blank, " "}, {Empty, Blank, " "},
 		},
 		{
-			{Empty, Blank, " "}, {Empty, Blank, " "}, {Empty, Blank, " "}, {Empty, Blank, " "}, {Empty, Blank, " "}, {Empty, Blank, " "}, {Empty, Blank, " "}, {Empty, Blank, " "},
+			{Empty, Blank, " "}, {Empty, Blank, " "}, {Empty, Blank, " "}, {Empty, Blank, " "},
+			{Empty, Blank, " "}, {Empty, Blank, " "}, {Empty, Blank, " "}, {Empty, Blank, " "},
 		},
 		{
-			{Empty, Blank, " "}, {Empty, Blank, " "}, {Empty, Blank, " "}, {Empty, Blank, " "}, {Empty, Blank, " "}, {Empty, Blank, " "}, {Empty, Blank, " "}, {Empty, Blank, " "},
+			{Empty, Blank, " "}, {Empty, Blank, " "}, {Empty, Blank, " "}, {Empty, Blank, " "},
+			{Empty, Blank, " "}, {Empty, Blank, " "}, {Empty, Blank, " "}, {Empty, Blank, " "},
 		},
 		{
-			{Empty, Blank, " "}, {Empty, Blank, " "}, {Empty, Blank, " "}, {Empty, Blank, " "}, {Empty, Blank, " "}, {Empty, Blank, " "}, {Empty, Blank, " "}, {Empty, Blank, " "},
+			{Empty, Blank, " "}, {Empty, Blank, " "}, {Empty, Blank, " "}, {Empty, Blank, " "},
+			{Empty, Blank, " "}, {Empty, Blank, " "}, {Empty, Blank, " "}, {Empty, Blank, " "},
 		},
 		{
-			{Player2, Pawn, "p"}, {Player2, Pawn, "p"}, {Player2, Pawn, "p"}, {Player2, Pawn, "p"}, {Player2, Pawn, "p"}, {Player2, Pawn, "p"}, {Player2, Pawn, "p"}, {Player2, Pawn, "p"},
+			{Player2, Pawn, g.conf.Pawn}, {Player2, Pawn, g.conf.Pawn}, {Player2, Pawn, g.conf.Pawn}, {Player2, Pawn, g.conf.Pawn},
+			{Player2, Pawn, g.conf.Pawn}, {Player2, Pawn, g.conf.Pawn}, {Player2, Pawn, g.conf.Pawn}, {Player2, Pawn, g.conf.Pawn},
 		},
 		{
-			{Player2, Rook, "R"}, {Player2, Knight, "H"}, {Player2, Bishop, "B"}, {Player2, King, "K"}, {Player2, Queen, "Q"}, {Player2, Bishop, "B"}, {Player2, Knight, "H"}, {Player2, Rook, "R"},
+			{Player2, Rook, g.conf.Rook}, {Player2, Knight, g.conf.Knight}, {Player2, Bishop, g.conf.Bishop}, {Player2, King, g.conf.King},
+			{Player2, Queen, g.conf.Queen}, {Player2, Bishop, g.conf.Bishop}, {Player2, Knight, g.conf.Knight}, {Player2, Rook, g.conf.Rook},
 		},
 	}
 }
