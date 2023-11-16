@@ -7,31 +7,35 @@ import (
 	"github.com/KupaJablek/CheSSH/internal/util"
 )
 
-func CreateHotseatGame() {
+func CreateHotseatGame(p1name, p2name string) {
 	var g Game
+	conf, _ := util.LoadConfig()
+	util.InitDefault(&conf)
+	g.conf = conf
+
 	InitializeBoard(&g)
 	g.current_player = Player1
 
 	util.ClearTerminal()
+	PrintBoard(&g, &conf)
 
-	PrintBoard(&g)
 	for !g.game_over {
 		move := GetPlayerMove(&g)
 
 		EndTurn(&g)
 		util.ClearTerminal()
 		if g.current_player == Player1 {
-			fmt.Println("Player 2 moved: ", move)
+			fmt.Printf("%s moved: %v", p1name, move)
 		} else {
-			fmt.Println("Player 1 moved: ", move)
+			fmt.Printf("%s moved: %v", p2name, move)
 		}
 		fmt.Println("")
-		PrintBoard(&g)
+		PrintBoard(&g, &conf)
 	}
 	ShowGameOverScreen(&g)
 }
 
-func HostLobby(HOST string, PORT string) {
+func HostLobby(HOST, PORT, USER, PASSWORD string) {
 	fmt.Print("NOT FULLY IMPLEMENTED YET\n\n")
 	conn, err := online.HostTCP(HOST, PORT, "tcp")
 	//conn, err := online.CreateSSHServer(HOST, PORT, "tcp")
@@ -40,7 +44,11 @@ func HostLobby(HOST string, PORT string) {
 		return
 	}
 
+	conf, _ := util.LoadConfig()
+	util.InitDefault(&conf)
+
 	var g Game
+	g.conf = conf
 	InitializeBoard(&g)
 	g.current_player = Player1
 
@@ -49,6 +57,7 @@ func HostLobby(HOST string, PORT string) {
 		fmt.Printf("It's your turn!\n")
 
 		// send data to client
+		PrintBoard(&g, &conf)
 		move := GetPlayerMove(&g)
 		fmt.Fprint(conn, move)
 		if g.game_over {
@@ -78,7 +87,7 @@ func HostLobby(HOST string, PORT string) {
 	ShowGameOverScreen(&g)
 }
 
-func JoinLobby(HOST string, PORT string) {
+func JoinLobby(HOST, PORT, USER string) {
 	fmt.Print("NOT FULLY IMPLEMENTED YET\n\n")
 	conn, err := online.JoinTCP(HOST, PORT, "tcp")
 	//conn, err := online.JoinSSHLobby(HOST, PORT, "tcp")
@@ -87,7 +96,11 @@ func JoinLobby(HOST string, PORT string) {
 		return
 	}
 
+	conf, _ := util.LoadConfig()
+	util.InitDefault(&conf)
+
 	var g Game
+	g.conf = conf
 	InitializeBoard(&g)
 	g.current_player = Player1
 
@@ -117,6 +130,7 @@ func JoinLobby(HOST string, PORT string) {
 		fmt.Printf("It's your turn!\n")
 
 		// send data to server
+		PrintBoard(&g, &conf)
 		move := GetPlayerMove(&g)
 		fmt.Fprint(conn, move)
 		if g.game_over {
@@ -140,7 +154,6 @@ func ShowGameOverScreen(g *Game) {
 
 func GetPlayerMove(g *Game) string {
 	var userInput string
-	PrintBoard(g)
 	validMove := false
 
 	for !validMove {
