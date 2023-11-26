@@ -7,10 +7,11 @@ import (
 	"github.com/fatih/color"
 )
 
-func PrintBoard(g *Game, c *util.Config) {
+func PrintBoard(g *Game, c *util.Config, printToPlayer Player) {
 	p1 := color.New(color.Attribute(g.conf.P1Colour), color.Bold)
 	p2 := color.New(color.Attribute(g.conf.P2Colour), color.Bold)
 
+	// board colour
 	bc := color.New(color.Attribute(g.conf.BoardColour), color.Bold)
 
 	var startCount int
@@ -18,15 +19,19 @@ func PrintBoard(g *Game, c *util.Config) {
 	var increment int
 
 	if g.current_player == Player1 {
+		p1.Printf("Player %s's Turn\n", g.p1name)
+	} else {
+		p2.Printf("Player %s's Turn\n", g.p2name)
+	}
+
+	if printToPlayer == Player1 {
 		startCount = 7
 		limit = -1
 		increment = -1
-		p1.Printf("Player 1's Turn\n")
 	} else {
 		startCount = 0
 		limit = 8
 		increment = 1
-		p2.Printf("Player 2's Turn\n")
 	}
 
 	bc.Println("\n   A B C D E F G H ")

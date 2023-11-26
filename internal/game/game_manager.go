@@ -1,6 +1,7 @@
 package game
 
 import (
+	"bytes"
 	"fmt"
 
 	"github.com/KupaJablek/CheSSH/internal/online"
@@ -13,11 +14,14 @@ func CreateHotseatGame(p1name, p2name string) {
 	util.InitDefault(&conf)
 	g.conf = conf
 
+	g.p1name = p1name
+	g.p2name = p2name
+
 	InitializeBoard(&g)
 	g.current_player = Player1
 
 	util.ClearTerminal()
-	PrintBoard(&g, &conf)
+	PrintBoard(&g, &conf, g.current_player)
 
 	for !g.game_over {
 		move := GetPlayerMove(&g)
@@ -30,13 +34,12 @@ func CreateHotseatGame(p1name, p2name string) {
 			fmt.Printf("%s moved: %v", p2name, move)
 		}
 		fmt.Println("")
-		PrintBoard(&g, &conf)
+		PrintBoard(&g, &conf, g.current_player)
 	}
 	ShowGameOverScreen(&g)
 }
 
 func HostLobby(HOST, PORT, USER, PASSWORD string) {
-	fmt.Print("NOT FULLY IMPLEMENTED YET\n\n")
 	conn, err := online.HostTCP(HOST, PORT, "tcp")
 	//conn, err := online.CreateSSHServer(HOST, PORT, "tcp")
 	if err != nil {
@@ -44,22 +47,28 @@ func HostLobby(HOST, PORT, USER, PASSWORD string) {
 		return
 	}
 
+	// clear messages from before connection
+	util.ClearTerminal()
+
 	conf, _ := util.LoadConfig()
 	util.InitDefault(&conf)
 
 	var g Game
+	g.p1name = "Player 1"
+	g.p2name = "Player 2"
+
 	g.conf = conf
 	InitializeBoard(&g)
 	g.current_player = Player1
 
 	for {
 		// server player's turn
-		fmt.Printf("It's your turn!\n")
 
 		// send data to client
-		PrintBoard(&g, &conf)
+		PrintBoard(&g, &conf, Player1)
 		move := GetPlayerMove(&g)
 		fmt.Fprint(conn, move)
+		EndTurn(&g)
 		if g.game_over {
 			conn.Close()
 			break
@@ -67,17 +76,27 @@ func HostLobby(HOST, PORT, USER, PASSWORD string) {
 
 		// client players turn
 		util.ClearTerminal()
-		fmt.Printf("It is Player 2's turn")
+		PrintBoard(&g, &conf, Player1)
 
 		// recieve data from client
-		buffer := make([]byte, 1024)
+		buffer := make([]byte, 5)
 		_, err := conn.Read(buffer)
+		cleanData := bytes.Trim(buffer, "\x00")
+		var parsedMove = string(cleanData)
 		if err != nil {
 			fmt.Println("Error reading data from server: ", err.Error())
 		}
 
+		if parsedMove == "n" {
+			// user has surrendered
+			g.game_over = true
+			g.winner = Player1
+			conn.Close()
+			break
+		}
+
 		// sync client side move with local game
-		MovePiece(&g, string(buffer))
+		MovePiece(&g, parsedMove)
 		EndTurn(&g)
 		if g.game_over {
 			conn.Close()
@@ -88,7 +107,6 @@ func HostLobby(HOST, PORT, USER, PASSWORD string) {
 }
 
 func JoinLobby(HOST, PORT, USER string) {
-	fmt.Print("NOT FULLY IMPLEMENTED YET\n\n")
 	conn, err := online.JoinTCP(HOST, PORT, "tcp")
 	//conn, err := online.JoinSSHLobby(HOST, PORT, "tcp")
 	if err != nil {
@@ -100,6 +118,8 @@ func JoinLobby(HOST, PORT, USER string) {
 	util.InitDefault(&conf)
 
 	var g Game
+	g.p1name = "Player 1"
+	g.p2name = "Player 2"
 	g.conf = conf
 	InitializeBoard(&g)
 	g.current_player = Player1
@@ -108,17 +128,28 @@ func JoinLobby(HOST, PORT, USER string) {
 	for {
 		// server player's turn
 		util.ClearTerminal()
-		fmt.Printf("It is Player 1's turn\n")
+
+		PrintBoard(&g, &conf, Player2)
 
 		// recieve data from server
-		buffer := make([]byte, 1024)
+		buffer := make([]byte, 5)
 		_, err := conn.Read(buffer)
 		if err != nil {
 			fmt.Println("Error reading data from server: ", err.Error())
 		}
 
+		cleanData := bytes.Trim(buffer, "\x00")
+		var parsedMove = string(cleanData)
+
 		// sync server side move with local game
-		MovePiece(&g, string(buffer))
+		if parsedMove == "n" {
+			// user has surrendered
+			g.game_over = true
+			g.winner = Player2
+			conn.Close()
+			break
+		}
+		MovePiece(&g, parsedMove)
 		EndTurn(&g)
 
 		if g.game_over {
@@ -127,11 +158,11 @@ func JoinLobby(HOST, PORT, USER string) {
 		}
 
 		util.ClearTerminal()
-		fmt.Printf("It's your turn!\n")
 
 		// send data to server
-		PrintBoard(&g, &conf)
+		PrintBoard(&g, &conf, Player2)
 		move := GetPlayerMove(&g)
+		EndTurn(&g)
 		fmt.Fprint(conn, move)
 		if g.game_over {
 			conn.Close()
@@ -144,17 +175,17 @@ func JoinLobby(HOST, PORT, USER string) {
 
 func ShowGameOverScreen(g *Game) {
 	util.ClearTerminal()
-	fmt.Println("GAMEOVER")
+	fmt.Print("!! GAMEOVER !!\n\n")
 	if g.winner == Player1 {
-		fmt.Println("Player 1 is the Winner")
+		fmt.Printf("%s is the Winner\n", g.p1name)
 	} else {
-		fmt.Println("Player 2 is the Winner")
+		fmt.Printf("%s is the Winner\n", g.p2name)
 	}
 }
 
 func GetPlayerMove(g *Game) string {
 	var userInput string
-	validMove := false
+	var validMove = false
 
 	for !validMove {
 		fmt.Println("enter chess coordinate ie: 'a1-a2' or n to surrender")

@@ -8,6 +8,8 @@ import (
 
 func HostTCP(HOST string, PORT string, TYPE string) (net.Conn, error) {
 	listen, err := net.Listen(TYPE, HOST+":"+PORT)
+	fmt.Printf("Lobby is open on %s", (HOST + ":" + PORT))
+
 	if err != nil {
 		errorMessage := fmt.Sprintf("Failed to listen on(%s): %s\n", HOST+":"+PORT, err.Error())
 		fmt.Println(errorMessage)

@@ -13,6 +13,11 @@ Install by cloning this repo:
 git clone https://github.com/KupaJablek/CheSSH.git
 ```
 
+To run from anywhere add this command to your .bashrc:
+```
+alias CheSSH='~/Fanshawe/semester6/CheSSH/bin/CheSSH'
+```
+
 ## Playing The Game
 cd into the directory where you cloned CheSSH and run:
 ```go

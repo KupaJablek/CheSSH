@@ -24,7 +24,6 @@ help: ##- show this help.
 	
 	@printf "	build: build a binary for your system\n"
 	@printf "	clean: remove all binaries from ./bin/\n"
-	@printf "	run: run CheSSH with no parameters\n"
-	@printf "	hotseat: create a hotseat game with no parameters\n"
-	@printf "	compile: create a binary for all supported x64 os\n\n"
+	@printf "	compile: create a binary for all supported x64 os\n"
+	@printf "	test: run all tests\n\n"
 	@printf "	help: show this menu\n"
