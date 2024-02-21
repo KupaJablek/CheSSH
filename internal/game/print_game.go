@@ -11,12 +11,9 @@ func PrintBoard(g *Game, c *util.Config, printToPlayer Player) {
 	p1 := color.New(color.Attribute(g.conf.P1Colour), color.Bold)
 	p2 := color.New(color.Attribute(g.conf.P2Colour), color.Bold)
 
-	// board colour
 	bc := color.New(color.Attribute(g.conf.BoardColour), color.Bold)
 
-	var startCount int
-	var limit int
-	var increment int
+	var startCount, limit, increment int
 
 	if g.current_player == Player1 {
 		p1.Printf("Player %s's Turn\n", g.p1name)

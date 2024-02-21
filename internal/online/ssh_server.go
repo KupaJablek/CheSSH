@@ -64,5 +64,5 @@ func CreateSSHServer(HOST string, PORT string, TYPE string) (net.Conn, error) {
 		//ssh.DiscardRequests(reqs)
 
 		return conn, nil
-	}
+    }
 }
