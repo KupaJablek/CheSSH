@@ -3,23 +3,29 @@ package main
 import (
 	"fmt"
 	"os"
+
+	"github.com/KupaJablek/CheSSH/internal/game"
 )
 
 func main() {
     args := os.Args
-
-    if len(args) != 2 {
-        fmt.Println("invalid commands")
+    if len(args) == 1 {
+        fmt.Println("invalid Args")
+        showHelp()
         return
     }
 
     switch args[1] {
-    case "--hotseat":
-        fmt.Println("hotseat")
     case "--join":
-        fmt.Println("join")
+        game.Join()
     case "--host":
-        fmt.Println("host")
+        game.Host()
+    default:
+        showHelp()
     }
-    return
 }
+
+func showHelp() {
+    fmt.Println("Usage: CheSSH [--join/--host]")
+}
+
