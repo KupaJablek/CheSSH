@@ -20,12 +20,14 @@ func main() {
         game.Join()
     case "--host":
         game.Host()
+    case "--hotseat":
+        game.HostHotseat()
     default:
         showHelp()
     }
 }
 
 func showHelp() {
-    fmt.Println("Usage: CheSSH [--join/--host]")
+    fmt.Println("Usage: CheSSH --[hotseat/join/host]")
 }
 
