@@ -9,9 +9,21 @@ func printGameStats(p1w, p2w int, p1n, p2n string) {
 
 func HostHotseat() {
     var p1wins, p2wins int
-    p1name := "Player 1"
-    p2name := "Player 2"
-    // load and store config
+    var p1name, p2name string
+
+    fmt.Println("Enter P1 Name:")
+    fmt.Scanln(&p1name)
+
+    fmt.Println("Enter P2 Name:")
+    fmt.Scanln(&p2name)
+
+    if p1name == "" {
+        p1name = "Player 1"
+    }
+
+    if p2name == "" {
+        p2name = "Player 2"
+    }
 
     for {
         var game Game

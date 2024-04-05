@@ -1,9 +1,12 @@
 package game
 
 import (
-    "fmt"
-    "github.com/fatih/color"
+	"fmt"
+	"strconv"
+
+	"github.com/fatih/color"
 )
+
 type Piece struct {
     name, player int
 }
@@ -60,28 +63,40 @@ func TakeTurn(g *Game) {
             return
         }
 
-        if _, ok := validMove(move); ok {
+        if m := validMove(move); m == nil {
             fmt.Println("Invalid move")
+            fmt.Println(m)
             continue
         }
     }
 }
 
-func validMove(m string) ([]int, bool) {
+func validMove(m string) [][]int {
     if len(m) != 5 {
-        return nil, false
+        return nil
     }
     
-    x1 := m[0] - 'a'
-    x2 := m[3] - 'a'
+    x1 := int(m[0] - 'a')
+    x2 := int(m[3] - 'a')
     if x1 < 0 || x1 > 7 {
-        return nil, false
+        return nil
     } 
     if x2 < 0 || x2 > 7 {
-        return nil, false
+        return nil
     } 
 
-    return nil, true
+    y1, err := strconv.Atoi(string(m[1]))
+    if err != nil {
+        return nil
+    }
+    y2, err := strconv.Atoi(string(m[4]))
+    if err != nil {
+        return nil
+    }
+
+    // check for piece specific validation
+
+    return [][]int{{x1, y1},{x2, y2}}
 }
 
 func PrintBoard(g *Game) {
@@ -109,7 +124,7 @@ func PrintBoard(g *Game) {
 	p2 := color.New(color.Attribute(31), color.Bold)
 
     for i := si; i != lim; i += inc {
-        fmt.Printf("%d", 8 - i)
+        fmt.Printf("%d", i + 1)
         fmt.Printf("%*s", padding, "")
         for k := 0; k < 8; k++ {
             p := g.board[i][k] 
@@ -139,7 +154,7 @@ func PrintBoard(g *Game) {
             }
             fmt.Printf("%*s", -padding, "")
         }
-        fmt.Printf("%d\n", 8 - i)
+        fmt.Printf("%d\n", i + 1)
     }
 
     fmt.Printf("%*s", padding - 1, "")
