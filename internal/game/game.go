@@ -63,40 +63,105 @@ func TakeTurn(g *Game) {
             return
         }
 
-        if m := validMove(move); m == nil {
+        if validMove(move, g) {
             fmt.Println("Invalid move")
-            fmt.Println(m)
+            //fmt.Println(m)
             continue
         }
     }
 }
 
-func validMove(m string) [][]int {
+func validMove(m string, g *Game) bool {
     if len(m) != 5 {
-        return nil
+        return false
     }
     
-    x1 := int(m[0] - 'a')
-    x2 := int(m[3] - 'a')
+    x1, x2 := int(m[0] - 'a'), int(m[3] - 'a')
     if x1 < 0 || x1 > 7 {
-        return nil
+        return false
     } 
     if x2 < 0 || x2 > 7 {
-        return nil
+        return false
     } 
 
     y1, err := strconv.Atoi(string(m[1]))
-    if err != nil {
-        return nil
-    }
-    y2, err := strconv.Atoi(string(m[4]))
-    if err != nil {
-        return nil
+    y2, err2 := strconv.Atoi(string(m[4]))
+    if err != nil || err2 != nil {
+        return false
     }
 
-    // check for piece specific validation
+    if y1 < 0 || y1 > 7 {
+        return false
+    } 
+    if y2 < 0 || y2 > 7 {
+        return false
+    } 
 
-    return [][]int{{x1, y1},{x2, y2}}
+    move := [][]int{{x1, y1},{x2, y2}}
+    startPiece := g.board[x1][y1]
+
+    switch startPiece.name {
+    case 0: // blank
+    return false
+    case 1: // pawn
+        if !validatePawn(move, g) {
+            return false
+        }
+    case 2: // rook
+    case 3: // horse
+    case 4: // bishop
+    case 5: // king
+    case 6: // queen
+    }
+
+    // update the board
+
+    return true 
+}
+
+func validatePawn(m[][]int, g *Game) bool {
+    yDiff := m[1][1] - m[0][1]
+    if Abs(yDiff) != 1 && Abs(yDiff) != 2 {
+        return false
+    }
+
+    xDiff := Abs(m[0][0] - m[1][0])
+    if Abs(xDiff) != 1 && xDiff != 0 {
+        return false
+    }
+
+    target := g.board[m[1][0]][m[1][1]]
+
+    if yDiff == 2 {
+        if target.player != 0 {
+            return false
+        }
+
+        if g.p1Turn && m[0][1] != 1 {
+            return false
+        }
+
+        if !g.p1Turn && m[0][1] != 6 {
+            return false
+        }
+        return true
+    }
+
+    if xDiff == 0 && target.player != 0 {
+        return false
+    }
+
+    if Abs(xDiff) == 1 {
+        if g.p1Turn && target.player == 2 {
+            return true
+        }
+
+        if !g.p1Turn && target.player == 1 {
+            return true
+        }
+    }
+
+    return false
 }
 
 func PrintBoard(g *Game) {
@@ -104,7 +169,7 @@ func PrintBoard(g *Game) {
     padding := -3
 
     fmt.Printf("%*s", padding - 1, "")
-    for i := 0; i < 8; i++ {
+    for i := range letters {
         fmt.Printf("%*c", padding - 1, letters[i])
     }
     fmt.Printf("\n%*s", padding - 1, "")
