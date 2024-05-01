@@ -108,6 +108,9 @@ func validMove(m string, g *Game) bool {
             return false
         }
     case 2: // rook
+        if !validateOrthogonal(move, g) {
+            return false
+        }
     case 3: // horse
     case 4: // bishop
     case 5: // king
@@ -162,6 +165,58 @@ func validatePawn(m[][]int, g *Game) bool {
     }
 
     return false
+}
+
+func validateOrthogonal(m[][]int, g *Game) bool {
+    target := g.board[m[1][0]][m[1][1]].player
+    if g.p1Turn && target == 1 {
+        return false
+    }
+    if !g.p1Turn && target == 2 {
+        return false
+    }
+
+    yDiff := m[1][1] - m[0][1]
+    xDiff := m[1][0] - m[0][0]
+
+    if xDiff != 0 && yDiff != 0 {
+        return false
+    }
+    if xDiff == 0 && yDiff == 0 {
+        return false
+    }
+
+    if yDiff > 0 {
+        for i := m[0][1]; i < m[1][1] - 1; i ++ {
+            if g.board[i][m[0][0]].player != 0 {
+                return false 
+            }
+        }
+    }
+    if yDiff < 0 {
+        for i := m[0][1]; i > m[1][1] - 1; i -- {
+            if g.board[i][m[0][0]].player != 0 {
+                return false 
+            }
+        }
+    }
+
+    if xDiff > 0 {
+        for i := m[0][0]; i < m[1][0] - 1; i ++ {
+            if g.board[m[0][1]][i].player != 0 {
+                return false 
+            }
+        }
+    }
+    if xDiff < 0 {
+        for i := m[0][0]; i > m[1][0] - 1; i -- {
+            if g.board[m[0][1]][i].player != 0 {
+                return false 
+            }
+        }
+    }
+
+    return true
 }
 
 func PrintBoard(g *Game) {
