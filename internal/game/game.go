@@ -113,8 +113,23 @@ func validMove(m string, g *Game) bool {
         }
     case 3: // horse
     case 4: // bishop
+        if !validateDiagonal(move, g) {
+            return false
+        }
     case 5: // king
+        yDiff := move[1][1] - move[0][1]
+        xDiff := move[1][0] - move[0][0]
+        if xDiff > 1 || yDiff > 1 {
+            return false
+        }
+
+        if !validateOrthogonal(move, g) && !validateDiagonal(move, g) {
+            return false
+        }
     case 6: // queen
+        if !validateOrthogonal(move, g) && !validateDiagonal(move, g) {
+            return false
+        }
     }
 
     // update the board
@@ -219,6 +234,57 @@ func validateOrthogonal(m[][]int, g *Game) bool {
     return true
 }
 
+func validateDiagonal(m[][]int, g *Game) bool {
+    target := g.board[m[1][0]][m[1][1]].player
+    if g.p1Turn && target == 1 {
+        return false
+    }
+    if !g.p1Turn && target == 2 {
+        return false
+    }
+
+    yDiff := m[1][1] - m[0][1]
+    xDiff := m[1][0] - m[0][0]
+    if Abs(xDiff) != Abs(yDiff) || xDiff == 0 || yDiff == 0 {
+        return false
+    }
+
+    if yDiff < 0 && xDiff < 0 {
+        for i := -1; i >= yDiff; i-- {
+            if g.board[m[0][0]+i][m[0][1]+i].player != 0 && m[0][0]-i != m[1][0] {
+                return false
+            }
+        }
+    }
+
+    if yDiff < 0 && xDiff > 0 {
+        for i := 1; i <= xDiff; i++ {
+            if g.board[m[0][0]+i][m[0][1]-i].player != 0 && i != xDiff {
+                return false
+            }
+        }
+
+    } 
+
+    if yDiff > 0 && xDiff < 0 {
+        for i := 1; i <= yDiff; i++ {
+            if g.board[m[0][0]-i][m[0][1]+i].player != 0 && i != yDiff {
+                return false
+            }
+        }
+    } 
+
+    if yDiff > 0 && xDiff > 0 {
+        for i := -1; i >= yDiff; i-- {
+            if g.board[m[0][0]+i][m[0][1]+i].player != 0 && i != yDiff {
+                return false
+            }
+        }
+    }
+
+    return true
+}
+
 func PrintBoard(g *Game) {
     letters := []rune{'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'}
     padding := -3
@@ -232,10 +298,10 @@ func PrintBoard(g *Game) {
     
     var si, lim, inc int
     if !g.p1Turn {
-        lim = 8
+        lim = len(g.board)
         inc = 1
     } else {
-        si = 7
+        si = len(g.board) - 1
         lim = -1
         inc = -1
     }
@@ -246,7 +312,7 @@ func PrintBoard(g *Game) {
     for i := si; i != lim; i += inc {
         fmt.Printf("%d", i + 1)
         fmt.Printf("%*s", padding, "")
-        for k := 0; k < 8; k++ {
+        for k := 0; k < len(g.board); k++ {
             p := g.board[i][k] 
             piece := ""
             switch p.name {
