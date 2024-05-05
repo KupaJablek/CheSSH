@@ -18,7 +18,7 @@ func Host() {
 		},
     }
 
-    key, _ := os.ReadFile("~/.ssh/id_rsa")
+    key, _ := os.ReadFile(currentUserKeyPath())
     signer, _ := ssh.ParsePrivateKey(key)
     config.AddHostKey(signer)
     
@@ -41,7 +41,17 @@ func Host() {
     }
 }
 
-func handleConn(c net.Conn) {
-   fmt.Println(c) 
+func handleConn(conn net.Conn) {
+    fmt.Println("client connection established")
+    fmt.Println(conn) 
+
+    for {
+        buffer := make([]byte, 1024)
+        _, err := conn.Read(buffer)
+        if err != nil {
+            fmt.Println("Error reading data from server: ", err.Error())
+        }
+        fmt.Println(string(buffer))
+    }
 }
 

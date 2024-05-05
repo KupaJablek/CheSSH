@@ -1,7 +1,6 @@
 package game
 
 import (
-	"bytes"
 	"fmt"
 	"os"
 
@@ -10,13 +9,13 @@ import (
 )
 
 func Join() {
-    pk, _ := os.ReadFile("") //PATH to private key
+    pk, _ := os.ReadFile(currentUserKeyPath()) //PATH to private key
     signer, err := ssh.ParsePrivateKey(pk)
 	if err != nil {
 		panic(err)
 	}
 
-	hostkeyCallback, err := knownhosts.New("") //PATH to .knownhosts
+	hostkeyCallback, err := knownhosts.New(knownHostsPath()) //PATH to .knownhosts
 	if err != nil {
 		panic(err)
 	}
@@ -29,7 +28,8 @@ func Join() {
 		HostKeyCallback: hostkeyCallback,
 	}
 
-	client, err := ssh.Dial("tcp", "", config) //IP to connect
+    address := "127.0.0.1" + ":" + "2200"
+	client, err := ssh.Dial("tcp", address, config) //IP to connect
 
 	if err != nil {
 		panic("Failed to dial: " + err.Error())
@@ -38,14 +38,18 @@ func Join() {
 	session, err := client.NewSession()
 	if err != nil {
 		panic("Failed to create session: " + err.Error())
-	}
+	} else {
+        fmt.Println("session created")
+    }
 
-	//Example command of what can be run. Should look into server config with no authorization asw 
-	var b bytes.Buffer
-	session.Stdout = &b
-	if err := session.Run("ls"); err != nil {
-		panic("Failed to run: " + err.Error())
-	}
-	fmt.Println(b.String())
 	defer session.Close()
+
+    for {
+        uInput := ""
+        fmt.Scanln(&uInput)
+
+        b := []byte(uInput)
+        
+        session.Stdout.Write(b)
+    }
 }
