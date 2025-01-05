@@ -55,3 +55,6 @@ For a full list of commands run `make help`
 - You can build your installation with `make build`
 
 - Delete binaries with `make clean`
+
+## License
+[mit](LICENSE)

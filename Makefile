@@ -1,4 +1,4 @@
-BINARY_NAME=CheSSH
+BINARY_NAME=CheSSH.bin
 
 build:
 	go build -o bin/${BINARY_NAME} ./cmd/CheSSH/
@@ -8,7 +8,7 @@ hotseat:
 
 clean:
 	go clean
-	rm ./bin/*
+	rm ./bin/${BINARY_NAME}
 
 tests:
 	go test -v ./internal/game/util.go ./internal/game/game.go ./internal/game/game_test.go
